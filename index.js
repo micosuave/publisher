@@ -132,7 +132,7 @@ app.get('/download/:id', function(req, res, next){
     
     // }
 var output = path.join(__dirname,'..','output.epub');
-var reportdata = req.path.replace('/','');
+var reportdata = req.params.id;
 console.log(reportdata);
 var Firebase = require('firebase');
 console.log(FIREBASE_URL);
@@ -179,14 +179,14 @@ ref.once('value', function(dataSnapshot){
 var callback = function(rdata){
 var option = {
 
-    title: rdata.title,
-    author: rdata.inventor,
+    title: rdata.title || 'title',
+    author: rdata.author || rdata.inventor || 'author',
     publisher: 'Lion Legal Products Inc',
-    cover: 'http://localhost:8000/patents/US'+rdata.number+'/preview',
+    cover: rdata.cover || 'http://localhost:8000/patents/US'+(rdata.number || '7888888')+'/preview',
     content: [{
         title: 'Patent Grant',
         author: 'USPTO',
-        data: rdata.content
+        data: rdata.content || 'mico'
     }]
 
 };
