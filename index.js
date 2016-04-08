@@ -121,8 +121,8 @@ app.get('/reader/:file', function(req, res, next){
 // });
 app.get('/download/:id', function(req, res, next){
 //  if(req.hostname == ('localhost'||'micoff.local'||'lexlab.io')){
-            var FIREBASE_URL = process.env.FIREBASE_DEV_URL;
-            var FIREBASE_SECRET = process.env.FIREBASE_DEV_SECRET;
+            var FIREBASE_URL = process.env.FIREBASE_URL;
+            var FIREBASE_SECRET = process.env.FIREBASE_SECRET;
     // }else{
         
     
