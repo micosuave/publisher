@@ -1,0 +1,5 @@
+/node_modules/
+/typings/
+*.epub
+.DS_store
+.vscode/

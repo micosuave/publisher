@@ -1,0 +1,42 @@
+{
+  "name": "publisher",
+  "version": "0.0.1",
+  "description": "epub parsing and publishing",
+  "main": "index.js",
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "colors": "^1.1.2",
+    "compression": "^1.6.1",
+    "connect": "^3.4.1",
+    "cookie-parser": "^1.4.1",
+    "epub-gen": "^0.0.12",
+    "epub-ocf": "^0.1.0",
+    "epub.js": "^0.2.14",
+    "error-handler": "^1.0.0",
+    "errorhandler": "^1.4.3",
+    "express": "^4.13.4",
+    "express-validator": "^2.20.3",
+    "firebase": "^2.4.2",
+    "html2epub": "^0.1.1",
+    "jade": "^1.11.0",
+    "logger": "0.0.1",
+    "method-override": "^2.3.5",
+    "morgan": "^1.7.0",
+    "optimist": "^0.6.1",
+    "portfinder": "^1.0.3",
+    "request": "^2.70.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "epub",
+    "pdf",
+    "html",
+    "express",
+    "node"
+  ],
+  "author": "micosuave",
+  "license": "MIT"
+}

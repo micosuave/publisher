@@ -1,0 +1,13 @@
+doctype html
+html
+  head
+    link(rel="stylesheet",href="https://lexlab.io/llp_core/dist/app.full.min.css")
+    script(src="/reader/node_modules/epub.js/build/libs/zip.min.js")
+    script(src="/reader/node_modules/epub.js/build/epub.js")
+  body.html.container
+    .card.card-block.card-fancy.col-xs-12
+      .row
+        button.btn.btn-default(onclick="Book.prevPage()") &lt;
+        .card.card-block(id="area")
+        button.btn.btn-default(onclick="Book.nextPage()") &gt;
+    script  Book = ePub('../output.epub');Book.renderTo('area')
