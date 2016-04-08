@@ -207,7 +207,10 @@ res.download(output);
 });
 
 app.post('*',function(req,res,next){
-   var rdata = req.body;
+   var rdata = req.body.data || req.body;
+    
+    console.log(rdata);
+    
     var d = new Date();
     var now = d.getTime();
     var output =    now + '.epub';
