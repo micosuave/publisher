@@ -2,12 +2,27 @@ doctype html
 html
   head
     link(rel="stylesheet",href="https://lexlab.io/llp_core/dist/app.full.min.css")
-    script(src="/reader/node_modules/epub.js/build/libs/zip.min.js")
-    script(src="/reader/node_modules/epub.js/build/epub.js")
+    script(src="./node_modules/epub.js/build/libs/zip.min.js")
+    script(src="./node_modules/epub.js/build/epub.js")
   body.html.container
-    .card.card-block.card-fancy.col-xs-12
-      .row
-        button.btn.btn-default(onclick="Book.prevPage()") &lt;
-        .card.card-block(id="area")
-        button.btn.btn-default(onclick="Book.nextPage()") &gt;
-    script  Book = ePub('../output.epub');Book.renderTo('area')
+    input#btnSelectBook(type='file')
+    #main.card.card-block.card-fancy.col-xs-12
+        #prev.arrow(onclick='book.prevPage();') &lsaquo;
+        #area.card.card-block
+        #next.arrow(onclick='book.nextPage();') &rsaquo;
+    script.
+        "use strict";
+        var book = ePub("./node_modules/epub.js/reader/moby-dick.epub");
+        book.renderTo("area");
+        document.getElementById('btnSelectBook').addEventListener('change', function (e) {
+        var file = e.target.files[0];
+        if (window.FileReader) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+        book.destroy();
+        book = ePub({bookPath: e.target.result});
+        book.renderTo("area");
+        }.bind(this);
+        reader.readAsArrayBuffer(file);
+        }
+        });
