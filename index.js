@@ -11,6 +11,7 @@ var errorHandler = require('errorhandler');
 var methodOverride = require('method-override');
 var request = require('request');
 var Epub = require('epub-gen');
+var EpubGenerator = require('epub-generator');
 var path = require('path');
 var http = require('http');
 var html2epub = require('html2epub');
@@ -155,7 +156,10 @@ ref.once('value', function(dataSnapshot){
     // }
     callback(root);
 });
-
+var REF = function(id){
+    var ref = new Firebase(FIREBASE_URL).child('content').child(id);
+    return ref;
+};
 
 // var reportdata = new html2epub({
   
@@ -177,33 +181,105 @@ ref.once('value', function(dataSnapshot){
 
 
 var callback = function(rdata){
+var postcss = require("postcss")
+var epubcss = require("postcss-epub-clean")
+ 
+// css to be processed 
+//var css = fs.readFileSync(path.join(process.cwd(),'..','llp_core','dist','app.full.min.css'), "utf8");
+ 
+// process css 
+/*var outputcss = postcss()
+  .use(epubcss)
+  .process(css)
+  .css;
+ */
+
+
+    
+var options = function(rdata){
+    var opt = this;
+   opt={ uuid: rdata.$id,
+    title: rdata.title,
+    language: 'en',
+    date: new Date(),
+    author: rdata.inventor,
+    description: rdata.description,
+    rights: 'MIT',
+    cover: rdata.coverimage || rdata.media 
+};
+return opt;
+};
+var file = fs.createWriteStream('../book.epub');
+
+var generator = new EpubGenerator(options(rdata));
+generator.add('/content/index.html', rdata.content, {mimetype: 'text/html',toc: true, title: rdata.patent.title});    
+//generator.add('/content/style.css', outputcss);
+
+var myfunc = function(rdata){
+for (var key in rdata.roarlist){
+    if(rdata.roarlist.hasOwnProperty(key)){
+        var datasrc = new REF(key);
+        datasrc.once('value', function(snapshot){
+            var data = snapshot.exportVal();
+           generator.add('/content/'+data.id+'.html', data.content,{mimetype: 'text/html', toc: true, title: data.title}).end().pipe(file);
+           console.log(data.id);
+            myfunc(data);      
+        });
+              
+    }
+}
+};
+myfunc(rdata);
+//generator.end().pipe(file);
+
+// generator.pipe(file);
+/*var css = fs.readFileSync(path.join(process.cwd(),'..','llp_core','dist','app.full.min.css'));
+
 var option = {
 
     title: rdata.title || 'title',
     author: rdata.author || rdata.inventor || 'author',
     publisher: 'Lion Legal Products Inc',
-    cover: rdata.cover || 'http://localhost:8000/patents/US'+(rdata.number || '7888888')+'/preview',
+    cover: rdata.cover || 'http://localhost:8000/patents/US'+(rdata.id || '7888888')+'/preview',
+    css: css,
     content: [{
-        title: 'Patent Grant',
-        author: 'USPTO',
+        title: rdata.title || 'Patent Grant',
+        author: rdata.author || rdata.inventor || 'USPTO',
         data: rdata.content || 'mico'
     }]
 
-};
-
-new Epub(option , output).promise.then(function(){
+};*/
+/*
+new Epub(option , 'book.epub').promise.then(function(){
 
         console.log("Ebook Generated Successfully!")
-res.download(output);
+            res.download('book.epub');
        }, function(err){
         console.error("Failed to generate Ebook because of ", err)
     });
 
 
 };
-
+*/
 // callback();
+var epubstream = require('epubstream'),
+    fs = require('fs');
 
+// Create epub and provide the minimum possible metadata
+var epubs = epubstream.createEpub({
+    title: 'Sample',
+    nav: [{ label: 'foo', content: 'foo.html' }]
+});
+
+// Start piping the epub to a file
+epubs.pipe(fs.createWriteStream('sample.epub'));
+
+// Add the file foo.xhtml to the archive
+epubs.addFile(rdata, 'foo.xhtml', function() {
+    // Write the XML files required for epub (ncx/opf/ocf)
+    epubs.finalize(function(b) { console.log('%d bytes', b); });
+});
+};
 });
 
 app.post('*',function(req,res,next){
