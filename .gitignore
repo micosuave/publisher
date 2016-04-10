@@ -3,3 +3,5 @@
 *.epub
 .DS_store
 .vscode/
+/dist/
+/source/
