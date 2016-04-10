@@ -25,7 +25,7 @@ var app = express();
 /**
  * Express configuration.
  */
-app.set('port', process.env.PORT || 80);
+app.set('port', process.env.PORT || 9000);
 app.set('views', '.');
 app.set('view engine', 'jade');
 app.use(compress());
@@ -242,4 +242,4 @@ app.post('*', function(req, res, next) {
 
 });
 
-app.listen(process.env.port, function(){ console.log('epub on port ', process.env.port); });
+app.listen(app.get('port'), function(){ console.log('epub on port ', app.get('port')); });
