@@ -81,8 +81,33 @@ app.use(function(req, res, next) {
 app.use('/reader', express.static(__dirname));
 app.get('/reader/:id', function(req, res, next) {
     // var ePub = require('epub.js');
-    var cb = res.render('index', {PATHTOEPUB: './dist/'+req.params.id+'.epub'});
-    
+    var cb = function(){
+        //shell.exec('rm -r ./dist/'+req.params.id );
+        
+        var ocf = require('epub-ocf');
+var container = ocf('./dist/'+req.params.id+'.epub'); // ocf is an alias for ocf.zip
+
+// ocf.open('path/to/book.epub', function(err, container) {}); 
+
+//var container = ocf.openSync('your container uri');
+// container.readEntry('META-INF/container.xml', function(err, content) {
+//   console.log(content);
+// });
+//var stream = container.createEntryStream('EPUB/images/cover.jpg');
+//stream.pipe(process.stdout);
+container.rootfiles(function(err, files) {
+  console.log(files); // [ 'EPUB/package.opf' ]
+});
+        
+        
+         res.render('index', {PATHTOEPUB: './dist/'+req.params.id+'/'});
+
+
+
+
+            
+        
+    };
     
     prepBook(req,res,next, cb);
     // new ePub(path.resolve(__dirname, req.params.file));
@@ -90,7 +115,7 @@ app.get('/reader/:id', function(req, res, next) {
 });
 
 app.get('/download/:id', function(req, res, next) {
-   var cb =  res.download(output);
+   var cb =  res.download('./dist/'+req.params.id+'.epub');
   prepBook(req, res, next, cb);
   
 });
@@ -100,7 +125,10 @@ var prepBook = function(req, res, next, cb){
     var d = new Date();
     var date = req.params.id;
     var output = path.join(__dirname, 'dist', date + '.epub');
-    shell.exec('mkdir -p '+'./dist/' + date);
+    shell.exec('mkdir -p '+'./tmp/' + date+'/OEBPS/');
+    /*var dest = './dist/'+date+'/OEBPS';
+    var src = path.resolve(__dirname,'..','llp_core','dist');
+    fs.createReadStream(src).pipe(fs.createWriteStream(dest));*/
     var reportdata = req.params.id;
     console.log(reportdata);
     var Firebase = require('firebase');
@@ -159,10 +187,10 @@ var options = function(rdata) {
        
        
         if (data.content) {
-            fs.writeFileSync('./dist/' + date + '/' + data.id + '.html', data.content.replace('app.full.min.css', 'style.css'), callback(data));
+            fs.writeFileSync('./tmp/' + date + '/OEBPS/' + data.id + '.html', data.content.replace('app.full.min.css', 'style.css'), callback(data));
             que.push([]);
         } else {
-            fs.writeFileSync('./dist/' + date + '/' + data.id + '.html', '<p>&nbsp;</p>', callback(data));
+            fs.writeFileSync('./tmp/' + date + '/OEBPS/' + data.id + '.html', '<p>&nbsp;</p>', callback(data));
             que.push([]);
         }
          
@@ -185,7 +213,7 @@ var options = function(rdata) {
         var snap = function(snapshot) {
             var data = snapshot.exportVal();
                 if (data.content) { 
-                    fs.writeFileSync('./dist/'+date+'/' + data.id + '.html', data.content.replace('app.full.min.css', 'style.css'), add(data)); }
+                    fs.writeFileSync('./tmp/'+date+'/OEBPS/' + data.id + '.html', data.content.replace('app.full.min.css', 'style.css'), add(data)); }
                 else { que.shift(); }
 
 
@@ -201,9 +229,9 @@ var options = function(rdata) {
             que.shift();
             console.log(que.length);
             if (que.length === 1) {
-                return generator.add( data.id + '.html', fs.createReadStream('./dist/'+date+'/' + data.id + '.html'), { toc: true, title: data.title }).end(cb);
+                return generator.add( data.id + '.html', fs.createReadStream('./tmp/'+date+'/OEBPS/' + data.id + '.html'), { toc: true, title: data.title }).end(cb);
             }else{
-            return generator.add( data.id + '.html', fs.createReadStream('./dist/'+date+'/' + data.id + '.html'), { toc: true, title: data.title });
+            return generator.add( data.id + '.html', fs.createReadStream('./tmp/'+date+'/OEBPS/' + data.id + '.html'), { toc: true, title: data.title });
             }
         };
    myfunc(rdata);
@@ -213,7 +241,7 @@ var options = function(rdata) {
         generator.add('app.ck.js', fs.createReadStream('../llp_core/dist/app.ck.js'));
         generator.add('minicache.js', fs.createReadStream('../llp_core/dist/minicache.js'));
         
-        generator.add('index.html', fs.createReadStream('./dist/'+date+'/' + rdata.id + '.html'), { toc: true, title: rdata.title });
+        generator.add('index.html', fs.createReadStream('./tmp/'+date+'/OEBPS/' + rdata.id + '.html'), { toc: true, title: rdata.title });
         
         
         generator.pipe(file);   

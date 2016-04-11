@@ -15,7 +15,7 @@ head
         "use strict";
         document.onreadystatechange = function () {
         if (document.readyState == "complete") {
-        EPUBJS.filePath = "./";
+        EPUBJS.filePath = "./dist/";
         EPUBJS.cssPath = window.location.href.replace(window.location.hash, '').replace('index.html', '') + "css/";
         // fileStorage.filePath = EPUBJS.filePath;
         window.reader = ePubReader("!{PATHTOEPUB}");
