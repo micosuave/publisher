@@ -28,7 +28,8 @@
     "portfinder": "^1.0.3",
     "postcss": "^5.0.19",
     "postcss-epub-clean": "^2.2.5",
-    "request": "^2.70.0"
+    "request": "^2.70.0",
+    "shelljs": "^0.6.0"
   },
   "devDependencies": {},
   "scripts": {

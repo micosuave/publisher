@@ -1,28 +1,81 @@
 doctype html
-html
-  head
-    link(rel="stylesheet",href="https://lexlab.io/llp_core/dist/app.full.min.css")
-    script(src="./node_modules/epub.js/build/libs/zip.min.js")
-    script(src="./node_modules/epub.js/build/epub.js")
-  body.html.container
-    input#btnSelectBook(type='file')
-    #main.card.card-block.card-fancy.col-xs-12
-        #prev.arrow(onclick='book.prevPage();') &lsaquo;
-        #area.card.card-block
-        #next.arrow(onclick='book.nextPage();') &rsaquo;
+head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
+    title
+    meta(name='description', content='')
+    meta(name='viewport', content='width=device-width, user-scalable=no')
+    meta(name='apple-mobile-web-app-capable', content='yes')
+    link(rel='stylesheet', href='./node_modules/epub.js/reader/css/normalize.css')
+    link(rel='stylesheet', href='./node_modules/epub.js/reader/css/main.css')
+    link(rel='stylesheet', href='./node_modules/epub.js/reader/css/popup.css')
+    script(src='./node_modules/epub.js/reader/js/libs/jquery.min.js')
+    script(src='./node_modules/epub.js/reader/js/libs/zip.min.js')
     script.
         "use strict";
-        var book = ePub("./node_modules/epub.js/reader/moby-dick.epub");
-        book.renderTo("area");
-        document.getElementById('btnSelectBook').addEventListener('change', function (e) {
-        var file = e.target.files[0];
-        if (window.FileReader) {
-        var reader = new FileReader();
-        reader.onload = function (e) {
-        book.destroy();
-        book = ePub({bookPath: e.target.result});
-        book.renderTo("area");
-        }.bind(this);
-        reader.readAsArrayBuffer(file);
+        document.onreadystatechange = function () {
+        if (document.readyState == "complete") {
+        EPUBJS.filePath = "./";
+        EPUBJS.cssPath = window.location.href.replace(window.location.hash, '').replace('index.html', '') + "css/";
+        // fileStorage.filePath = EPUBJS.filePath;
+        window.reader = ePubReader("!{PATHTOEPUB}");
         }
-        });
+        };
+    // File Storage
+    //script(src="./node_modules/epub.js/reader/js/libs/localforage.min.js")
+    // Full Screen
+    script(src='./node_modules/epub.js/reader/js/libs/screenfull.min.js')
+    // Render
+    script(src='./node_modules/epub.js/reader/js/epub.min.js')
+    // Hooks
+    script(src='./node_modules/epub.js/reader/js/hooks.min.js')
+    // Reader
+    script(src='./node_modules/epub.js/reader/js/reader.min.js')
+    // Plugins
+    script(src="./node_modules/epub.js/reader/js/plugins/search.js")
+    // Highlights
+    //script(src="./node_modules/epub.js/reader/js/libs/jquery.highlight.js")
+    script(src="./node_modules/epub.js/reader/js/hooks/extensions/highlight.js")
+#sidebar
+    #panels
+        input#searchBox(placeholder='search', type='search')
+        a#show-Search.show_view.icon-search(data-view='Search') Search
+        a#show-Toc.show_view.icon-list-1.active(data-view='Toc') TOC
+        a#show-Bookmarks.show_view.icon-bookmark(data-view='Bookmarks') Bookmarks
+        a#show-Notes.show_view.icon-edit(data-view='Notes') Notes
+    #tocView.view
+    #searchView.view
+        ul#searchResults
+    #bookmarksView.view
+        ul#bookmarks
+    #notesView.view
+        #new-note
+            textarea#note-text
+            button#note-anchor Anchor
+        ol#notes
+#main
+    #titlebar
+        #opener
+            a#slider.icon-menu Menu
+        #metainfo
+            span#book-title
+            span#title-seperator &nbsp;&nbsp;&ndash;&nbsp;&nbsp;
+            span#chapter-title
+        #title-controls
+            a#bookmark.icon-bookmark-empty Bookmark
+            a#setting.icon-cog Settings
+            a#fullscreen.icon-resize-full Fullscreen
+    #divider
+    #prev.arrow &lsaquo;
+    #viewer
+    #next.arrow &rsaquo;
+    #loader
+        img(src='./node_modules/epub.js/reader/img/loader.gif')
+#settings-modal.modal.md-effect-1
+    .md-content
+        h3 Settings
+        div
+            p
+                input#sidebarReflow(type='checkbox', name='sidebarReflow')
+        .closer.icon-cancel-circled
+.overlay
