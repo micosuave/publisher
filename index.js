@@ -78,7 +78,7 @@ app.use(function(req, res, next) {
     res.locals.user = req.user;
     next();
 });
-app.use('/reader', express.static(__dirname));
+app.use('', express.static(__dirname));
 app.get('/reader/:id', function(req, res, next) {
     // var ePub = require('epub.js');
     var cb = function(){
